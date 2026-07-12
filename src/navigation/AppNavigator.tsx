@@ -1,4 +1,5 @@
 import React from 'react';
+import { Platform } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -26,9 +27,18 @@ function HomeTabs() {
           backgroundColor: colors.tabBar,
           borderTopColor: colors.tabBarBorder,
           borderTopWidth: 1,
-          paddingBottom: 6,
-          paddingTop: 6,
-          height: 60,
+          paddingBottom: Platform.OS === 'ios' ? 6 : 8,
+          paddingTop: 8,
+          height: 66,
+          ...Platform.select({
+            ios: {
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: -4 },
+              shadowOpacity: 0.06,
+              shadowRadius: 12,
+            },
+            android: { elevation: 8 },
+          }),
         },
         tabBarActiveTintColor: colors.primary,
         tabBarInactiveTintColor: colors.textMuted,
@@ -39,8 +49,8 @@ function HomeTabs() {
         name="Beranda"
         component={HomeScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="home" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'home' : 'home-outline'} size={focused ? 24 : 22} color={color} />
           ),
         }}
       />
@@ -48,8 +58,8 @@ function HomeTabs() {
         name="Event"
         component={EventsScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="trophy" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'trophy' : 'trophy-outline'} size={focused ? 24 : 22} color={color} />
           ),
         }}
       />
@@ -57,8 +67,8 @@ function HomeTabs() {
         name="Kalender"
         component={CalendarScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={focused ? 24 : 22} color={color} />
           ),
         }}
       />
@@ -66,8 +76,8 @@ function HomeTabs() {
         name="Lainnya"
         component={MoreScreen}
         options={{
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="settings" size={size} color={color} />
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'settings' : 'settings-outline'} size={focused ? 24 : 22} color={color} />
           ),
         }}
       />
@@ -85,8 +95,9 @@ export function AppNavigator() {
         screenOptions={{
           headerStyle: { backgroundColor: colors.background },
           headerTintColor: colors.text,
-          headerTitleStyle: { fontWeight: '700' },
+          headerTitleStyle: { fontWeight: '700', fontSize: 17 },
           contentStyle: { backgroundColor: colors.background },
+          headerShadowVisible: false,
         }}
       >
         <Stack.Screen

@@ -62,12 +62,12 @@ export function FilterChips({ items, selected, onSelect, colors }: Props) {
 }
 
 const styles = StyleSheet.create({
-  container: { paddingHorizontal: 16, paddingVertical: 8, gap: 8 },
+  container: { paddingHorizontal: 16, paddingVertical: 10, gap: 8 },
   chip: {
-    paddingHorizontal: 14,
-    paddingVertical: 8,
+    paddingHorizontal: 16,
+    paddingVertical: 9,
     borderRadius: 20,
     borderWidth: 1,
   },
-  chipText: { fontSize: 13, fontWeight: '500' },
+  chipText: { fontSize: 13, fontWeight: '600' },
 });

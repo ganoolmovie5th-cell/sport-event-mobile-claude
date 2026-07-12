@@ -54,9 +54,11 @@ export function EventsScreen() {
               onSelect={(key) => setSportFilter(key as any)}
               colors={colors}
             />
-            <Text style={[styles.resultCount, { color: colors.textSecondary }]}>
-              {filteredEvents.length} event ditemukan
-            </Text>
+            <View style={styles.resultHeader}>
+              <Text style={[styles.resultCount, { color: colors.textSecondary }]}>
+                🏆 {filteredEvents.length} event ditemukan
+              </Text>
+            </View>
           </View>
         }
         renderItem={({ item }) => (
@@ -68,8 +70,12 @@ export function EventsScreen() {
         )}
         ListEmptyComponent={
           <View style={styles.empty}>
+            <Text style={styles.emptyEmoji}>🔍</Text>
+            <Text style={[styles.emptyTitle, { color: colors.text }]}>
+              Tidak Ditemukan
+            </Text>
             <Text style={[styles.emptyText, { color: colors.textMuted }]}>
-              Tidak ada event yang cocok
+              Coba ubah filter atau kata kunci pencarian
             </Text>
           </View>
         }
@@ -80,7 +86,13 @@ export function EventsScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  resultCount: { fontSize: 13, paddingHorizontal: 20, paddingVertical: 4 },
-  empty: { alignItems: 'center', padding: 48 },
-  emptyText: { fontSize: 15 },
+  resultHeader: {
+    paddingHorizontal: 20,
+    paddingVertical: 8,
+  },
+  resultCount: { fontSize: 13, fontWeight: '600' },
+  empty: { alignItems: 'center', padding: 48, gap: 8 },
+  emptyEmoji: { fontSize: 44, marginBottom: 8 },
+  emptyTitle: { fontSize: 16, fontWeight: '700' },
+  emptyText: { fontSize: 14, textAlign: 'center' },
 });

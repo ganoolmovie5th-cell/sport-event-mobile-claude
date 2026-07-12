@@ -12,8 +12,8 @@ interface Props {
 
 export function SearchBar({ value, onChangeText, placeholder, colors }: Props) {
   return (
-    <View style={[styles.container, { backgroundColor: colors.surface, borderColor: colors.border }]}>
-      <Ionicons name="search" size={20} color={colors.textMuted} style={styles.icon} />
+    <View style={[styles.container, { backgroundColor: colors.glass, borderColor: colors.border }]}>
+      <Ionicons name="search" size={18} color={colors.textMuted} style={styles.icon} />
       <TextInput
         style={[styles.input, { color: colors.text }]}
         value={value}
@@ -25,7 +25,7 @@ export function SearchBar({ value, onChangeText, placeholder, colors }: Props) {
       />
       {value.length > 0 && (
         <Pressable onPress={() => onChangeText('')} accessibilityRole="button" accessibilityLabel="Hapus pencarian">
-          <Ionicons name="close-circle" size={20} color={colors.textMuted} />
+          <Ionicons name="close-circle" size={18} color={colors.textMuted} />
         </Pressable>
       )}
     </View>
@@ -36,13 +36,13 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     alignItems: 'center',
-    borderRadius: 12,
+    borderRadius: 22,
     borderWidth: 1,
-    paddingHorizontal: 14,
-    height: 48,
+    paddingHorizontal: 16,
+    height: 44,
     marginHorizontal: 16,
     marginVertical: 8,
   },
   icon: { marginRight: 10 },
-  input: { flex: 1, fontSize: 15, paddingVertical: 0 },
+  input: { flex: 1, fontSize: 14, fontWeight: '500', paddingVertical: 0 },
 });

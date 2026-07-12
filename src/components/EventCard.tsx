@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, Pressable } from 'react-native';
+import { View, Text, StyleSheet, Pressable, Platform } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SportEvent } from '../types';
 import { SPORTS } from '../constants/sports';
@@ -21,13 +21,34 @@ export function EventCard({ event, onPress, colors }: Props) {
 
   return (
     <Pressable
-      style={[styles.card, { backgroundColor: colors.card, borderColor: colors.border }]}
+      style={[
+        styles.card,
+        {
+          backgroundColor: colors.card,
+          borderColor: colors.cardBorder,
+          borderLeftColor: sportMeta.color,
+          ...Platform.select({
+            ios: {
+              shadowColor: sportMeta.color,
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.12,
+              shadowRadius: 12,
+            },
+            android: { elevation: 4 },
+          }),
+        },
+      ]}
       onPress={onPress}
       accessibilityRole="button"
       accessibilityLabel={`Event ${event.title}`}
     >
+      {/* Sport emoji watermark */}
+      <Text style={[styles.watermark, { color: sportMeta.color }]}>
+        {sportMeta.emoji}
+      </Text>
+
       <View style={styles.header}>
-        <View style={[styles.emojiBox, { backgroundColor: sportMeta.color + '20' }]}>
+        <View style={[styles.emojiBox, { backgroundColor: sportMeta.color + '18' }]}>
           <Text style={styles.emoji}>{event.imageEmoji}</Text>
         </View>
         <View style={styles.headerInfo}>
@@ -35,18 +56,37 @@ export function EventCard({ event, onPress, colors }: Props) {
             {event.title}
           </Text>
           <View style={styles.meta}>
-            <View style={[styles.sportBadge, { backgroundColor: sportMeta.color + '20' }]}>
+            <View style={[styles.sportBadge, { backgroundColor: sportMeta.color + '15' }]}>
               <Text style={[styles.sportText, { color: sportMeta.color }]}>
                 {sportMeta.emoji} {sportMeta.label}
               </Text>
             </View>
-            <View style={[styles.statusBadge, {
-              backgroundColor: event.status === 'confirmed' ? colors.success + '20' :
-                event.status === 'tentative' ? colors.warning + '20' : colors.textMuted + '20'
-            }]}>
+            <View style={[
+              styles.statusBadge,
+              {
+                backgroundColor: event.status === 'confirmed'
+                  ? colors.success + '15'
+                  : event.status === 'tentative'
+                    ? colors.warning + '15'
+                    : colors.textMuted + '15',
+              },
+            ]}>
+              <View style={[
+                styles.statusDot,
+                {
+                  backgroundColor: event.status === 'confirmed'
+                    ? colors.success
+                    : event.status === 'tentative'
+                      ? colors.warning
+                      : colors.textMuted,
+                },
+              ]} />
               <Text style={[styles.statusText, {
-                color: event.status === 'confirmed' ? colors.success :
-                  event.status === 'tentative' ? colors.warning : colors.textMuted
+                color: event.status === 'confirmed'
+                  ? colors.success
+                  : event.status === 'tentative'
+                    ? colors.warning
+                    : colors.textMuted,
               }]}>
                 {getStatusLabel(event.status)}
               </Text>
@@ -66,26 +106,29 @@ export function EventCard({ event, onPress, colors }: Props) {
           />
         </Pressable>
       </View>
-      <View style={[styles.footer, { borderTopColor: colors.border }]}>
-        <View style={styles.footerItem}>
-          <Ionicons name="calendar-outline" size={14} color={colors.textSecondary} />
-          <Text style={[styles.footerText, { color: colors.textSecondary }]}>
+
+      <View style={styles.footer}>
+        <View style={[styles.dateBadge, { backgroundColor: colors.primary + '12' }]}>
+          <Ionicons name="calendar" size={13} color={colors.primary} />
+          <Text style={[styles.dateText, { color: colors.primary }]}>
             {formatDateRange(event.startDate, event.endDate)}
           </Text>
         </View>
-        <View style={styles.footerItem}>
-          <Ionicons name="location-outline" size={14} color={colors.textSecondary} />
-          <Text style={[styles.footerText, { color: colors.textSecondary }]} numberOfLines={1}>
-            {event.city}
-          </Text>
-        </View>
-        {days > 0 && (
-          <View style={[styles.daysChip, { backgroundColor: colors.primary + '20' }]}>
-            <Text style={[styles.daysText, { color: colors.primary }]}>
-              {days} hari lagi
+        <View style={styles.footerRight}>
+          <View style={styles.footerItem}>
+            <Ionicons name="location" size={13} color={colors.textSecondary} />
+            <Text style={[styles.footerText, { color: colors.textSecondary }]} numberOfLines={1}>
+              {event.city}
             </Text>
           </View>
-        )}
+          {days > 0 && (
+            <View style={[styles.daysChip, { backgroundColor: colors.accent + '15' }]}>
+              <Text style={[styles.daysText, { color: colors.accent }]}>
+                {days}d
+              </Text>
+            </View>
+          )}
+        </View>
       </View>
     </Pressable>
   );
@@ -93,39 +136,79 @@ export function EventCard({ event, onPress, colors }: Props) {
 
 const styles = StyleSheet.create({
   card: {
-    borderRadius: 16,
+    borderRadius: 18,
     borderWidth: 1,
+    borderLeftWidth: 3,
     marginHorizontal: 16,
-    marginVertical: 6,
+    marginVertical: 7,
     padding: 16,
+    overflow: 'hidden',
+  },
+  watermark: {
+    position: 'absolute',
+    right: -8,
+    top: -8,
+    fontSize: 80,
+    opacity: 0.06,
   },
   header: { flexDirection: 'row', alignItems: 'flex-start', gap: 12 },
   emojiBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 12,
+    width: 50,
+    height: 50,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  emoji: { fontSize: 24 },
-  headerInfo: { flex: 1, gap: 6 },
-  title: { fontSize: 16, fontWeight: '700', lineHeight: 22 },
-  meta: { flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
-  sportBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
+  emoji: { fontSize: 26 },
+  headerInfo: { flex: 1, gap: 8 },
+  title: { fontSize: 16, fontWeight: '700', lineHeight: 22, letterSpacing: -0.2 },
+  meta: { flexDirection: 'row', gap: 8, flexWrap: 'wrap' },
+  sportBadge: {
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
   sportText: { fontSize: 11, fontWeight: '600' },
-  statusBadge: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8 },
-  statusText: { fontSize: 11, fontWeight: '600' },
-  footer: {
+  statusBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginTop: 12,
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 10,
+    gap: 5,
+  },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+  },
+  statusText: { fontSize: 11, fontWeight: '600' },
+  footer: {
+    marginTop: 14,
     paddingTop: 12,
-    borderTopWidth: 1,
-    gap: 12,
-    flexWrap: 'wrap',
+    gap: 8,
+  },
+  dateBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
+  },
+  dateText: { fontSize: 12, fontWeight: '600' },
+  footerRight: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   footerItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
-  footerText: { fontSize: 12 },
-  daysChip: { paddingHorizontal: 8, paddingVertical: 3, borderRadius: 8, marginLeft: 'auto' },
+  footerText: { fontSize: 12, fontWeight: '500' },
+  daysChip: {
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 10,
+  },
   daysText: { fontSize: 11, fontWeight: '700' },
 });

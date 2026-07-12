@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { View, Text, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, Pressable, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
@@ -21,7 +21,8 @@ export function CalendarScreen() {
   const { theme } = useAppStore();
   const colors = theme === 'dark' ? darkTheme : lightTheme;
 
-  const [year, setYear] = useState(2026);
+  const now = new Date();
+  const [year, setYear] = useState(now.getFullYear() < 2026 ? 2026 : now.getFullYear());
   const [selectedMonth, setSelectedMonth] = useState<number | null>(null);
 
   const eventDays = useMemo(() => {
@@ -41,25 +42,47 @@ export function CalendarScreen() {
     return getEventsByMonth(EVENTS, year, selectedMonth);
   }, [year, selectedMonth]);
 
+  const isCurrentMonth = (idx: number) => {
+    return now.getFullYear() === year && now.getMonth() === idx;
+  };
+
   return (
     <ScrollView
       style={[styles.container, { backgroundColor: colors.background }]}
       contentContainerStyle={{ paddingBottom: insets.bottom + 80 }}
     >
+      {/* Year navigation - bigger, bolder */}
       <View style={styles.yearNav}>
-        <Pressable onPress={() => setYear((y) => y - 1)} accessibilityRole="button" accessibilityLabel="Tahun sebelumnya">
-          <Ionicons name="chevron-back" size={28} color={colors.text} />
+        <Pressable
+          style={[styles.navBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={() => setYear((y) => y - 1)}
+          accessibilityRole="button"
+          accessibilityLabel="Tahun sebelumnya"
+        >
+          <Ionicons name="chevron-back" size={22} color={colors.text} />
         </Pressable>
-        <Text style={[styles.yearText, { color: colors.text }]}>{year}</Text>
-        <Pressable onPress={() => setYear((y) => y + 1)} accessibilityRole="button" accessibilityLabel="Tahun berikutnya">
-          <Ionicons name="chevron-forward" size={28} color={colors.text} />
+        <View style={styles.yearCenter}>
+          <Text style={[styles.yearText, { color: colors.text }]}>{year}</Text>
+          <Text style={[styles.yearSubtext, { color: colors.textMuted }]}>
+            {Object.values(eventDays).reduce((a, b) => a + b, 0)} event
+          </Text>
+        </View>
+        <Pressable
+          style={[styles.navBtn, { backgroundColor: colors.surface, borderColor: colors.border }]}
+          onPress={() => setYear((y) => y + 1)}
+          accessibilityRole="button"
+          accessibilityLabel="Tahun berikutnya"
+        >
+          <Ionicons name="chevron-forward" size={22} color={colors.text} />
         </Pressable>
       </View>
 
+      {/* Month grid */}
       <View style={styles.monthGrid}>
         {MONTH_NAMES.map((name, idx) => {
           const count = eventDays[idx] || 0;
           const isSelected = selectedMonth === idx;
+          const isCurrent = isCurrentMonth(idx);
           return (
             <Pressable
               key={idx}
@@ -67,7 +90,12 @@ export function CalendarScreen() {
                 styles.monthCell,
                 {
                   backgroundColor: isSelected ? colors.primary : colors.surface,
-                  borderColor: isSelected ? colors.primary : colors.border,
+                  borderColor: isCurrent && !isSelected ? colors.primary : isSelected ? colors.primary : colors.border,
+                  borderWidth: isCurrent && !isSelected ? 2 : 1,
+                  ...(isSelected ? Platform.select({
+                    ios: { shadowColor: colors.primary, shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.2, shadowRadius: 8 },
+                    android: { elevation: 4 },
+                  }) : {}),
                 },
               ]}
               onPress={() => setSelectedMonth(isSelected ? null : idx)}
@@ -78,10 +106,18 @@ export function CalendarScreen() {
                 {name.slice(0, 3)}
               </Text>
               {count > 0 && (
-                <View style={[styles.dot, { backgroundColor: isSelected ? '#fff' : colors.primary }]}>
-                  <Text style={[styles.dotText, { color: isSelected ? colors.primary : '#fff' }]}>
-                    {count}
-                  </Text>
+                <View style={styles.dotRow}>
+                  {Array.from({ length: Math.min(count, 4) }).map((_, i) => (
+                    <View
+                      key={i}
+                      style={[styles.eventDot, { backgroundColor: isSelected ? '#fff' : colors.primary }]}
+                    />
+                  ))}
+                  {count > 4 && (
+                    <Text style={[styles.dotMore, { color: isSelected ? '#fff' : colors.primary }]}>
+                      +{count - 4}
+                    </Text>
+                  )}
                 </View>
               )}
             </Pressable>
@@ -89,35 +125,50 @@ export function CalendarScreen() {
         })}
       </View>
 
+      {/* Event list for selected month */}
       {selectedMonth !== null && (
         <View style={styles.eventList}>
           <Text style={[styles.monthTitle, { color: colors.text }]}>
-            {MONTH_NAMES[selectedMonth]} {year}
+            📅 {MONTH_NAMES[selectedMonth]} {year}
           </Text>
           {monthEvents.length === 0 ? (
-            <Text style={[styles.noEvents, { color: colors.textMuted }]}>
-              Tidak ada event di bulan ini
-            </Text>
+            <View style={styles.noEventsWrap}>
+              <Text style={styles.noEventsEmoji}>📭</Text>
+              <Text style={[styles.noEvents, { color: colors.textMuted }]}>
+                Tidak ada event di bulan ini
+              </Text>
+            </View>
           ) : (
-            monthEvents.map((event) => (
-              <Pressable
-                key={event.id}
-                style={[styles.eventItem, { backgroundColor: colors.surface, borderColor: colors.border }]}
-                onPress={() => navigation.navigate('Detail', { eventId: event.id })}
-                accessibilityRole="button"
-              >
-                <Text style={styles.eventEmoji}>{event.imageEmoji}</Text>
-                <View style={styles.eventInfo}>
-                  <Text style={[styles.eventTitle, { color: colors.text }]} numberOfLines={1}>
-                    {event.title}
-                  </Text>
-                  <Text style={[styles.eventDate, { color: colors.textSecondary }]}>
-                    {formatDateShort(event.startDate)} · {event.city}
-                  </Text>
-                </View>
-                <View style={[styles.sportDot, { backgroundColor: SPORTS[event.sport].color }]} />
-              </Pressable>
-            ))
+            monthEvents.map((event) => {
+              const sportMeta = SPORTS[event.sport];
+              return (
+                <Pressable
+                  key={event.id}
+                  style={[styles.eventItem, {
+                    backgroundColor: colors.surface,
+                    borderColor: colors.cardBorder,
+                    borderLeftColor: sportMeta.color,
+                  }]}
+                  onPress={() => navigation.navigate('Detail', { eventId: event.id })}
+                  accessibilityRole="button"
+                >
+                  <Text style={styles.eventEmoji}>{event.imageEmoji}</Text>
+                  <View style={styles.eventInfo}>
+                    <Text style={[styles.eventTitle, { color: colors.text }]} numberOfLines={1}>
+                      {event.title}
+                    </Text>
+                    <Text style={[styles.eventDate, { color: colors.textSecondary }]}>
+                      {formatDateShort(event.startDate)} · {event.city}
+                    </Text>
+                  </View>
+                  <View style={[styles.sportChip, { backgroundColor: sportMeta.color + '15' }]}>
+                    <Text style={[styles.sportChipText, { color: sportMeta.color }]}>
+                      {sportMeta.emoji}
+                    </Text>
+                  </View>
+                </Pressable>
+              );
+            })
           )}
         </View>
       )}
@@ -131,10 +182,21 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 24,
-    paddingVertical: 20,
+    gap: 20,
+    paddingVertical: 24,
+    paddingHorizontal: 20,
   },
-  yearText: { fontSize: 24, fontWeight: '800' },
+  navBtn: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    borderWidth: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  yearCenter: { alignItems: 'center' },
+  yearText: { fontSize: 28, fontWeight: '800', letterSpacing: -0.5 },
+  yearSubtext: { fontSize: 12, fontWeight: '500', marginTop: 2 },
   monthGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -145,29 +207,39 @@ const styles = StyleSheet.create({
     width: '30%',
     flexGrow: 1,
     alignItems: 'center',
-    paddingVertical: 16,
-    borderRadius: 14,
-    borderWidth: 1,
-    gap: 6,
+    paddingVertical: 18,
+    borderRadius: 16,
+    gap: 8,
   },
-  monthName: { fontSize: 14, fontWeight: '600' },
-  dot: { width: 20, height: 20, borderRadius: 10, alignItems: 'center', justifyContent: 'center' },
-  dotText: { fontSize: 10, fontWeight: '700' },
-  eventList: { paddingHorizontal: 16, paddingTop: 24 },
-  monthTitle: { fontSize: 18, fontWeight: '700', marginBottom: 12 },
-  noEvents: { fontSize: 14, textAlign: 'center', paddingVertical: 24 },
+  monthName: { fontSize: 14, fontWeight: '700' },
+  dotRow: { flexDirection: 'row', alignItems: 'center', gap: 3 },
+  eventDot: { width: 6, height: 6, borderRadius: 3 },
+  dotMore: { fontSize: 10, fontWeight: '700', marginLeft: 2 },
+  eventList: { paddingHorizontal: 16, paddingTop: 28 },
+  monthTitle: { fontSize: 18, fontWeight: '700', marginBottom: 14, letterSpacing: -0.3 },
+  noEventsWrap: { alignItems: 'center', paddingVertical: 32, gap: 8 },
+  noEventsEmoji: { fontSize: 36 },
+  noEvents: { fontSize: 14 },
   eventItem: {
     flexDirection: 'row',
     alignItems: 'center',
     padding: 14,
-    borderRadius: 12,
+    borderRadius: 14,
     borderWidth: 1,
-    marginBottom: 8,
+    borderLeftWidth: 3,
+    marginBottom: 10,
     gap: 12,
   },
   eventEmoji: { fontSize: 28 },
   eventInfo: { flex: 1 },
-  eventTitle: { fontSize: 15, fontWeight: '600', marginBottom: 2 },
-  eventDate: { fontSize: 12 },
-  sportDot: { width: 10, height: 10, borderRadius: 5 },
+  eventTitle: { fontSize: 15, fontWeight: '700', marginBottom: 3, letterSpacing: -0.2 },
+  eventDate: { fontSize: 12, fontWeight: '500' },
+  sportChip: {
+    width: 32,
+    height: 32,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sportChipText: { fontSize: 16 },
 });
