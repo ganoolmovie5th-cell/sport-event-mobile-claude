@@ -21,6 +21,7 @@ Aplikasi React Native (Expo) untuk melihat jadwal lengkap event olahraga nasiona
 - 🏠 **Beranda** — Event terdekat, statistik, filter by sport
 - 🏆 **Event** — Daftar semua event dengan pencarian & filter (sport/tahun/status)
 - 📅 **Kalender** — Tampilan bulan, navigasi tahun, tap bulan untuk lihat event
+- ❤️ **Watchlist** — Daftar event yang di-simpan, sorted by date
 - 📋 **Detail** — Info lengkap event, wishlist, share, beli tiket
 - ⚙️ **Lainnya** — Dark/Light mode, statistik, venue populer, tentang
 
