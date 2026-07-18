@@ -10,6 +10,7 @@ import { HomeScreen } from '../screens/HomeScreen';
 import { EventsScreen } from '../screens/EventsScreen';
 import { DetailScreen } from '../screens/DetailScreen';
 import { CalendarScreen } from '../screens/CalendarScreen';
+import { WatchlistScreen } from '../screens/WatchlistScreen';
 import { MoreScreen } from '../screens/MoreScreen';
 
 const Tab = createBottomTabNavigator();
@@ -69,6 +70,15 @@ function HomeTabs() {
         options={{
           tabBarIcon: ({ color, focused }) => (
             <Ionicons name={focused ? 'calendar' : 'calendar-outline'} size={focused ? 24 : 22} color={color} />
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Watchlist"
+        component={WatchlistScreen}
+        options={{
+          tabBarIcon: ({ color, focused }) => (
+            <Ionicons name={focused ? 'heart' : 'heart-outline'} size={focused ? 24 : 22} color={color} />
           ),
         }}
       />
