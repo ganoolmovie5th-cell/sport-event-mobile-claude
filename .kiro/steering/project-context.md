@@ -81,3 +81,25 @@ npx expo export --platform android  # bundle sukses
 <type>: <deskripsi>
 ```
 Type: `feat` `fix` `refactor` `chore` `docs`
+
+---
+
+## Data Accuracy (Juli 2026)
+
+13 past sport events (dates < 2026-07-21) updated from `status: 'confirmed'` to `status: 'completed'`:
+- Indonesia Masters 2026 (01-21)
+- IBL Indonesia 2026 (01-10)
+- Proliga Voli 2026 (02-14)
+- Kejuaraan Renang Indonesia (04-10)
+- Krui Pro WSL (04-14)
+- Indonesia Surfing Championship (05-05)
+- Bali Marathon (05-17)
+- Kejuaraan Atletik Nasional (05-20)
+- Indonesia Open (06-10)
+- Bintan Triathlon (06-21)
+- Tour de Flores (07-14)
+- FIFA World Cup (07-19)
+
+Timestamp: 2026-07-21 (sync dengan current date). Sebelumnya 13 event ini masih marked 'confirmed' padahal dates sudah lewat.
+
+**Commit:** `Update event statuses to completed for all past events`
