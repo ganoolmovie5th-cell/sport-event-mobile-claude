@@ -132,6 +132,3 @@ const CATEGORY_LABELS: Record<string, string> = {
 export function getCategoryLabel(cat: string): string {
   return CATEGORY_LABELS[cat] || 'Lainnya';
 }
-      return cat;
-  }
-}
