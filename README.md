@@ -80,6 +80,10 @@ src/
     └── AppNavigator.tsx    # Tab + Stack navigation
 ```
 
+## Data Accuracy (Juli 2026)
+
+13 past sport events (dates < 2026-07-21) updated from `status: 'confirmed'` to `status: 'completed'` (commit: Update event statuses to completed for all past events).
+
 ## Bahasa
 
 Seluruh UI menggunakan **Bahasa Indonesia**.
