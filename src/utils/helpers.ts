@@ -113,26 +113,25 @@ export function getEventsByMonth(
   });
 }
 
+const STATUS_LABELS: Record<EventStatus, string> = {
+  confirmed: 'Dikonfirmasi',
+  tentative: 'Tentatif',
+  completed: 'Selesai',
+};
+
 export function getStatusLabel(status: EventStatus): string {
-  switch (status) {
-    case 'confirmed':
-      return 'Dikonfirmasi';
-    case 'tentative':
-      return 'Tentatif';
-    case 'completed':
-      return 'Selesai';
-  }
+  return STATUS_LABELS[status];
 }
 
+const CATEGORY_LABELS: Record<string, string> = {
+  international: 'Internasional',
+  national: 'Nasional',
+  regional: 'Regional',
+};
+
 export function getCategoryLabel(cat: string): string {
-  switch (cat) {
-    case 'international':
-      return 'Internasional';
-    case 'national':
-      return 'Nasional';
-    case 'regional':
-      return 'Regional';
-    default:
+  return CATEGORY_LABELS[cat] || 'Lainnya';
+}
       return cat;
   }
 }
