@@ -30,6 +30,18 @@
       ],
       "expo-status-bar",
       "expo-font"
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d3c3a6bb-9e2b-4e53-b6e8-10527ebb948d"
+      }
+    },
+    "owner": "ganoolmovie5th",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/d3c3a6bb-9e2b-4e53-b6e8-10527ebb948d"
+    }
   }
 }
