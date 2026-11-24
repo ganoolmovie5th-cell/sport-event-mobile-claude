@@ -207,7 +207,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   heroGradientOverlay: {
-    ...StyleSheet.absoluteFillObject,
+    ...StyleSheet.absoluteFill,
     borderBottomLeftRadius: 32,
     borderBottomRightRadius: 32,
   },

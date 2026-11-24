@@ -2,7 +2,7 @@
 
 Aplikasi mobile jadwal event olahraga nasional dan internasional di Indonesia 2026-2030. Versi mobile dari SportEvent ID web.
 
-**Tech Stack:** React Native · Expo SDK 54 · TypeScript · React Navigation 7 · Zustand
+**Tech Stack:** React Native · Expo SDK 58 · TypeScript · React Navigation 7 · Zustand
 
 ## Features
 
